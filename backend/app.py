@@ -1,0 +1,174 @@
+from flask import Flask, request, jsonify, send_from_directory, session
+import os
+import requests
+import json
+from dotenv import load_dotenv
+from ollama import chat
+
+load_dotenv()
+
+apikey = os.getenv("SCALEDOWN_API_KEY")
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+FRONTEND_DIR = os.path.join(BASE_DIR, "../frontend")
+
+app = Flask(__name__, static_folder=FRONTEND_DIR, static_url_path="")
+app.secret_key = "replace_this_with_random_string"
+
+# Map keywords to file names
+
+COLLEGE_DATA_FILES = {
+    "iit delhi": "iit_delhi.md",
+    "iit kharagpur": "iit_kharagpur.md",
+    "jadavpur": "jadavpur.md",
+    "nit durgapur": "nit_durgapur.md"
+}
+
+COLLEGE_KEYWORDS = {
+    "iit delhi": [
+        "iit delhi",
+        "iitd",
+        "indian institute of technology delhi",
+        "iit delhi college"
+    ],
+    "iit kharagpur": [
+        "iit kharagpur",
+        "iitkgp",
+        "kgp",
+        "indian institute of technology kharagpur",
+        "iit kharagpur college"
+    ],
+    "jadavpur": [
+        "jadavpur",
+        "jadavpur university",
+        "ju",
+        "ju kolkata",
+        "jadavpur college"
+    ],
+    "nit durgapur": [
+        "nit durgapur",
+        "nitd",
+        "n.i.t durgapur",
+        "national institute of technology durgapur",
+        "nit durgapur college"
+    ]
+}
+
+import requests
+
+def scaledown_compression(context, question):
+    url = "https://api.scaledown.xyz/compress/raw/"
+
+    headers = {
+        'x-api-key': apikey,
+        'Content-Type': 'application/json'
+    }
+
+    payload = {
+        "context": context,
+        "prompt": question,
+        "scaledown": {
+            "rate": "auto" # Automatic compression rate optimization
+        }
+    }
+
+    try:
+        response = requests.post(url, headers=headers, data=json.dumps(payload), timeout=30)
+        response.raise_for_status()
+
+        data = response.json()
+
+        # Adjust key if API returns different field
+        compressed = data.get("compressed", "")
+        print(compressed)
+        if not compressed:
+            # fallback to original context
+            return context
+
+        return compressed
+
+    except Exception as e:
+        print("ScaleDown error:", e)
+        return context
+
+def ollama_response(prompt):
+    try:
+        response = chat(
+            "gemma3:270m",
+            messages=[{"role": "user", "content": prompt}]
+        )
+        return response.message.content
+    except Exception as e:
+        print("Ollama error:", e)
+        return "Sorry, the AI model is not responding right now."
+
+
+def detect_college(question):
+    q = question.lower()
+    for college, keywords in COLLEGE_KEYWORDS.items():
+        for word in keywords:
+            if word in q:
+                return college
+    return None
+
+def load_college_data(college):
+    data_path = os.path.join(BASE_DIR, "data", COLLEGE_DATA_FILES[college])
+    with open(data_path, "r", encoding="utf-8") as f:
+        return f.read()
+
+@app.route("/")
+def serve_index():
+    return send_from_directory(FRONTEND_DIR, "index.html")
+
+@app.route("/chat", methods=["POST"])
+def chat_route():
+    data = request.json
+    question = data.get("question", "")
+
+    detected = detect_college(question)
+    current_college = session.get("college")
+
+    # Case 1: No college selected yet
+    if current_college is None:
+        if detected:
+            session["college"] = detected
+            current_college = detected
+        else:
+            return jsonify({
+                "answer": "Please mention the college name first."
+            })
+
+    # Case 2: User switches college
+    if detected and detected != current_college:
+        session["college"] = detected
+        current_college = detected
+
+    # Load only selected college data
+    college_data = load_college_data(current_college)
+
+    # Compress context
+    compressed_context = scaledown_compression(college_data, question)
+
+    # Build final prompt
+    final_prompt = f"""
+You are a university admissions assistant.
+
+Use only the provided college data to answer.
+
+COLLEGE: {current_college.upper()}
+
+DATA:
+{compressed_context}
+
+QUESTION:
+{question}
+"""
+
+    answer = ollama_response(final_prompt)
+
+    return jsonify({"answer": answer})
+
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)

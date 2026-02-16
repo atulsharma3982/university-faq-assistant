@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>University FAQ Assistant</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app-container">
+
+    <header class="app-header">
+        <h1>University FAQ Assistant</h1>
+        <p>Ask questions about admissions, fees, and scholarships</p>
+    </header>
+
+    <!-- Suggested Questions -->
+    <div class="suggestions">
+        <button class="suggestion">What is the application deadline?</button>
+        <button class="suggestion">What is the tuition fee?</button>
+        <button class="suggestion">How can I apply?</button>
+        <button class="suggestion">Who is eligible for scholarships?</button>
+    </div>
+
+    <!-- Chat Window -->
+    <div id="chat-box" class="chat-box"></div>
+
+    <!-- Input Area -->
+    <div class="input-area">
+        <input 
+            type="text" 
+            id="user-input" 
+            placeholder="Type your question..." 
+            autocomplete="off"
+        >
+        <button id="send-btn">Send</button>
+    </div>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,193 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: #f4f6f8;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+}
+
+/* Main container */
+.app-container {
+    width: 100%;
+    max-width: 480px;
+    height: 90vh;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+/* Header */
+.app-header {
+    padding: 18px 16px;
+    background: #4a6cf7;
+    color: white;
+    text-align: center;
+}
+
+.app-header h1 {
+    font-size: 20px;
+    margin-bottom: 4px;
+}
+
+.app-header p {
+    font-size: 13px;
+    opacity: 0.9;
+}
+
+/* Suggested questions */
+.suggestions {
+    padding: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    border-bottom: 1px solid #eee;
+}
+
+.suggestion {
+    background: #eef1ff;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    cursor: pointer;
+    flex-grow: 1;
+    text-align: center;
+}
+
+.suggestion:hover {
+    background: #dbe2ff;
+}
+
+/* Chat area */
+.chat-box {
+    flex: 1;
+    padding: 12px;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Messages */
+.message {
+    max-width: 80%;
+    padding: 10px 12px;
+    border-radius: 12px;
+    font-size: 14px;
+    line-height: 1.4;
+    word-wrap: break-word;
+}
+
+.user-message {
+    align-self: flex-end;
+    background: #4a6cf7;
+    color: white;
+}
+
+.bot-message {
+    align-self: flex-start;
+    background: #f1f3f5;
+}
+
+/* Input area */
+.input-area {
+    display: flex;
+    border-top: 1px solid #eee;
+}
+
+#user-input {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    outline: none;
+    font-size: 14px;
+}
+
+#send-btn {
+    padding: 12px 18px;
+    border: none;
+    background: #4a6cf7;
+    color: white;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+#send-btn:hover {
+    background: #3a57d6;
+}
+
+/* =========================
+   Responsive Breakpoints
+   ========================= */
+
+/* Small phones */
+@media (max-width: 480px) {
+    body {
+        padding: 0;
+        align-items: stretch;
+    }
+
+    .app-container {
+        height: 100vh;
+        border-radius: 0;
+        max-width: 100%;
+    }
+
+    .app-header h1 {
+        font-size: 18px;
+    }
+
+    .app-header p {
+        font-size: 12px;
+    }
+
+    .message {
+        font-size: 13px;
+        max-width: 90%;
+    }
+
+    #user-input {
+        font-size: 13px;
+    }
+
+    #send-btn {
+        font-size: 13px;
+        padding: 10px 14px;
+    }
+}
+
+/* Tablets */
+@media (min-width: 481px) and (max-width: 768px) {
+    .app-container {
+        max-width: 600px;
+        height: 85vh;
+    }
+
+    .app-header h1 {
+        font-size: 22px;
+    }
+
+    .message {
+        font-size: 15px;
+    }
+}
+
+/* Large screens */
+@media (min-width: 1024px) {
+    .app-container {
+        max-width: 520px;
+        height: 80vh;
+    }
+}

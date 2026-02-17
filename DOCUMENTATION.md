@@ -46,6 +46,7 @@ assistant that responds using **only verified college data**.
 ### Secondary Objectives
 
 -   Maintain a clean and responsive user interface
+-   Provide a college comparison feature for better decision-making
 -   Support follow-up questions without repeating college names
 -   Keep the architecture simple and understandable
 
@@ -196,6 +197,24 @@ answers - No hallucination - No assumptions outside provided data
 
 ------------------------------------------------------------------------
 
+### 8.5 College Comparison Mode
+
+The system supports comparison between two universities in a single query.
+
+Example:
+User: “Compare IIT Delhi and Jadavpur for fees”
+
+Working:
+1. The system detects two college names in the question.
+2. Data for both colleges is loaded.
+3. The contexts are combined and compressed using the ScaleDown API.
+4. The compressed data is sent to the LLM.
+5. The LLM returns a structured comparison.
+
+This feature helps users quickly evaluate multiple universities without manually checking separate sources.
+
+------------------------------------------------------------------------
+
 ## 9. API Endpoints
 
 ### GET /
@@ -255,7 +274,7 @@ The system can be extended by adding more data files and keywords.
 
 ## 13. Limitations
 
--   Limited to four colleges
+-   Limited to four colleges and comparison between two at a time
 -   Keyword-based detection
 -   No long-term conversation history
 -   Cold start delays on free hosting

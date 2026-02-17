@@ -3,7 +3,6 @@ import os
 import requests
 import json
 from dotenv import load_dotenv
-from ollama import chat
 
 load_dotenv()
 
@@ -80,7 +79,6 @@ def scaledown_compression(context, question):
 
         # Adjust key if API returns different field
         compressed = data.get("compressed", "")
-        print(compressed)
         if not compressed:
             # fallback to original context
             return context
@@ -93,11 +91,30 @@ def scaledown_compression(context, question):
 
 def ollama_response(prompt):
     try:
-        response = chat(
-            "gemma3:270m",
-            messages=[{"role": "user", "content": prompt}]
-        )
-        return response.message.content
+        url = "https://ollama.com/api/chat"
+
+        headers = {
+            "Authorization": f"Bearer {os.getenv('OLLAMA_API_KEY')}",
+            "Content-Type": "application/json"
+        }
+
+        data = {
+            "model": "gpt-oss:20b-cloud",
+            "messages": [
+                {"role": "user", "content": prompt}
+            ]
+        }
+
+        response = requests.post(url, json=data, headers=headers, stream=True)
+
+        final_text = ""
+        for line in response.iter_lines():
+            if line:
+                chunk = json.loads(line.decode())
+                final_text += chunk.get("message", {}).get("content", "")
+
+        return final_text if final_text else "No response from AI."
+
     except Exception as e:
         print("Ollama error:", e)
         return "Sorry, the AI model is not responding right now."

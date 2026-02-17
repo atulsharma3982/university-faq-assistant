@@ -168,9 +168,15 @@ def chat_route():
 
     # Build final prompt
     final_prompt = f"""
-You are a university admissions assistant.
+You are a university admissions FAQ bot.
 
-Use only the provided college data to answer.
+RULES:
+- Answer ONLY using the provided DATA.
+- If the DATA does not contain the answer, say: "This information is not available in the provided data."
+- Keep answers SHORT and DIRECT.
+- Do NOT create tables.
+- Do NOT add step-by-step guides unless explicitly asked.
+- Do NOT assume or guess values.
 
 COLLEGE: {current_college.upper()}
 
@@ -179,6 +185,8 @@ DATA:
 
 QUESTION:
 {question}
+
+ANSWER:
 """
 
     answer = ollama_response(final_prompt)

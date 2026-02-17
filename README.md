@@ -9,7 +9,8 @@ ScaleDown API, and generates answers using an Ollama cloud model.
 
 ## Live Demo
 
-    https://university-faq-assistant-wv8d.onrender.com
+[University FAQ Assistant](https://university-faq-assistant-wv8d.onrender.com)
+
 
 ------------------------------------------------------------------------
 
@@ -21,6 +22,7 @@ ScaleDown API, and generates answers using an Ollama cloud model.
 -   LLM-based responses via Ollama Cloud
 -   Clean, responsive chat interface
 -   Session-based state (per-user college memory)
+-   College comparison mode for side-by-side university evaluation
 -   Fully deployable on free hosting
 
 ------------------------------------------------------------------------
@@ -64,23 +66,23 @@ User question\
 
 ## Project Structure
 
-    university-faq-bot/ \
-    │\
-    ├── backend/ \
-    │ ├── app.py \
-    │ └── data/ \
-    │ ├── iit_delhi.md \
-    │ ├── iit_kharagpur.md \
-    │ ├── jadavpur.md \
-    │ └── nit_durgapur.md \
-    │ ├── frontend/ \
-    │ ├── index.html \
-    │ ├── style.css \
-    │ └── script.js \
-    │ ├── requirements.txt \
-    ├── .env.example \
-    ├── .gitignore \
-    └── README.md\
+    university-faq-bot/ 
+    │
+    ├── backend/ 
+    │ ├── app.py 
+    │ └── data/ 
+    │ ├── iit_delhi.md 
+    │ ├── iit_kharagpur.md 
+    │ ├── jadavpur.md 
+    │ └── nit_durgapur.md 
+    │ ├── frontend/ 
+    │ ├── index.html 
+    │ ├── style.css 
+    │ └── script.js 
+    │ ├── requirements.txt 
+    ├── .env.example 
+    ├── .gitignore 
+    └── README.md
 
 ------------------------------------------------------------------------
 
@@ -88,7 +90,7 @@ User question\
 
 ### 1. Clone the repository
 
-    git clone https://github.com/atulsharma3982/university-faq-bot.git\
+    git clone https://github.com/atulsharma3982/university-faq-bot.git
     cd university-faq-bot
 
 ### 2. Create virtual environment (recommended)
@@ -106,8 +108,8 @@ User question\
 
 Create a `.env` file in the project root:
 
->SCALEDOWN_API_KEY=your_scaledown_key\
->OLLAMA_API_KEY=your_ollama_key
+SCALEDOWN_API_KEY=your_scaledown_key\
+OLLAMA_API_KEY=your_ollama_key
 
 ### 5. Run the backend
 
@@ -160,12 +162,30 @@ The system detects the college automatically from user queries.
 
 ------------------------------------------------------------------------
 
+## Creative Feature: College Comparison Mode
+
+The assistant supports a comparison mode that allows users to compare two universities in a single query.
+
+Example:
+Compare IIT Delhi and Jadavpur for fees
+
+How it works:
+1. The system detects two college names in the query.
+2. Data for both colleges is loaded.
+3. The combined context is compressed using ScaleDown.
+4. The LLM generates a structured comparison.
+
+This helps students quickly evaluate multiple universities without searching different sources.
+
+------------------------------------------------------------------------
+
 ## Example Questions
 
 -   What is the tuition fee for IIT Delhi?
 -   How can I apply to Jadavpur University?
 -   Scholarships at NIT Durgapur
 -   Admission process for IIT Kharagpur
+-   Compare IIT Delhi and Jadavpur for fees
 
 ------------------------------------------------------------------------
 

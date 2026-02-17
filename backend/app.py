@@ -132,16 +132,71 @@ def load_college_data(college):
     data_path = os.path.join(BASE_DIR, "data", COLLEGE_DATA_FILES[college])
     with open(data_path, "r", encoding="utf-8") as f:
         return f.read()
+    
+def detect_multiple_colleges(question):
+    q = question.lower()
+    found = []
+
+    for college, keywords in COLLEGE_KEYWORDS.items():
+        for word in keywords:
+            if word in q:
+                found.append(college)
+                break
+
+    # remove duplicates
+    return list(set(found))
 
 @app.route("/")
 def serve_index():
     return send_from_directory(FRONTEND_DIR, "index.html")
 
 @app.route("/chat", methods=["POST"])
+@app.route("/chat", methods=["POST"])
 def chat_route():
     data = request.json
     question = data.get("question", "")
 
+    # Detect multiple colleges first
+    detected_colleges = detect_multiple_colleges(question)
+
+    # COMPARISON MODE
+    if len(detected_colleges) == 2:
+        college1, college2 = detected_colleges
+
+        data1 = load_college_data(college1)
+        data2 = load_college_data(college2)
+
+        combined_context = f"""
+COLLEGE 1: {college1.upper()}
+{data1}
+
+COLLEGE 2: {college2.upper()}
+{data2}
+"""
+
+        compressed = scaledown_compression(combined_context, question)
+
+        prompt = f"""
+You are a university comparison assistant.
+
+RULES:
+- Compare only using the provided data.
+- Keep answers short and structured.
+- Do not guess or add extra information.
+
+DATA:
+{compressed}
+
+QUESTION:
+{question}
+
+ANSWER:
+"""
+
+        answer = ollama_response(prompt)
+        return jsonify({"answer": answer})
+
+    # NORMAL SINGLE-COLLEGE MODE
     detected = detect_college(question)
     current_college = session.get("college")
 
@@ -160,7 +215,7 @@ def chat_route():
         session["college"] = detected
         current_college = detected
 
-    # Load only selected college data
+    # Load selected college data
     college_data = load_college_data(current_college)
 
     # Compress context
@@ -172,11 +227,10 @@ You are a university admissions FAQ bot.
 
 RULES:
 - Answer ONLY using the provided DATA.
-- If the DATA does not contain the answer, say: "This information is not available in the provided data."
-- Keep answers SHORT and DIRECT.
-- Do NOT create tables.
-- Do NOT add step-by-step guides unless explicitly asked.
-- Do NOT assume or guess values.
+- If the DATA does not contain the answer, say:
+  "This information is not available in the provided data."
+- Keep answers short and direct.
+- Do NOT create tables unless asked.
 
 COLLEGE: {current_college.upper()}
 

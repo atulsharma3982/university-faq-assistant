@@ -183,6 +183,8 @@ RULES:
 - Compare only using the provided data.
 - Keep answers short and structured.
 - Do not guess or add extra information.
+- Do not use markdown syntax. Use lists or simple paragraph
+- Do NOT create tables unless asked.
 
 DATA:
 {compressed}
